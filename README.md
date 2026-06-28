@@ -44,5 +44,5 @@ To run the full telemetry stack locally on your workstation, execute the followi
 
 1. **Clone the repository:**
    ```bash
-   git clone [https://github.com/YOUR_USERNAME/CoreTrack.git](https://github.com/YOUR_USERNAME/CoreTrack.git)
+   git clone [https://github.com/parthi-5/CoreTrack.git](https://github.com/parthi-5/CoreTrack.git)
    cd CoreTrack
