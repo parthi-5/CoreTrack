@@ -1,0 +1,165 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap");
+
+body {
+  font-family: "Inter", sans-serif;
+  background-color: #f4f6f9; /* Soft tech background gray */
+  margin: 0;
+  padding: 0;
+  color: #2d3748; /* Premium deep charcoal text */
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 40px 20px;
+}
+
+/* 3. The Grid Layout: Force cards to spread evenly across the viewport horizontally */
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 24px;
+  align-items: start;
+  width: 100%;
+  margin-top: 20px;
+}
+
+.dashboard-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 40px 20px;
+}
+
+/* Header Styling */
+.main-header {
+  margin-bottom: 40px;
+  border-bottom: 2px solid #e2e8f0;
+  padding-bottom: 20px;
+}
+
+.logo {
+  font-size: 2rem;
+  font-weight: 700;
+  letter-spacing: -1px;
+  color: #1a202c;
+}
+
+.logo .accent {
+  color: #4f46e5; /* Electric Indigo Accent */
+}
+
+.subtitle {
+  margin: 5px 0 0 0;
+  color: #718096;
+  font-size: 0.95rem;
+}
+
+/* Flexbox Layout Row */
+.card-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  gap: 25px; /* Adds even breathing spacing between elements */
+}
+
+/* Premium Dashboard Cards */
+.dashboard-card {
+  background-color: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px; /* Smooth professional rounded edges */
+  padding: 24px;
+  max-width: 100%;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03); /* Soft subtle modern shadow */
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+/* Interactive hover effect to mimic real production apps */
+.dashboard-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 12px 20px rgba(0, 0, 0, 0.06);
+}
+
+.card-icon {
+  font-size: 2rem;
+  margin-bottom: 15px;
+}
+
+.dashboard-card h2 {
+  font-size: 1.3rem;
+  margin: 0 0 10px 0;
+  color: #53678f;
+}
+
+.card-desc {
+  color: #4a5568;
+  font-size: 0.9rem;
+  line-height: 1.5;
+  margin-bottom: 20px;
+  height: 60px; /* Forces descriptions to align evenly */
+}
+
+.metric-display {
+  font-size: 0.9rem;
+  font-weight: 600;
+  margin-bottom: 20px;
+  color: #718096;
+}
+
+.highlight {
+  color: #4f46e5;
+}
+
+.success-text {
+  color: #10b981; /* Emerald Green */
+}
+
+/* Premium UI Inputs and Buttons */
+.input-group {
+  margin-bottom: 20px;
+}
+
+.custom-input {
+  width: 100%;
+  padding: 12px;
+  border: 2px solid #e2e8f0;
+  border-radius: 6px;
+  box-sizing: border-box;
+  font-family: inherit;
+  font-size: 0.9rem;
+  transition: border-color 0.2s;
+}
+
+.custom-input:focus {
+  outline: none;
+  border-color: #4f46e5; /* Glow blue on selection */
+}
+
+.btn-primary {
+  width: 100%;
+  background-color: #1a202c; /* Slick Dark Charcoal button */
+  color: white;
+  border: none;
+  padding: 12px;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.btn-primary:hover {
+  background-color: #2d3748;
+}
+
+.btn-accent {
+  background-color: #4f46e5; /* Indigo accent color for primary AI action */
+}
+
+.btn-accent:hover {
+  background-color: #4338ca;
+}
