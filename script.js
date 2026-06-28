@@ -1,7 +1,6 @@
 let currentUserId = localStorage.getItem("activeSaaSUser") || null;
 let isLoginMode = true;
-
-// 1. DYNAMIC SCREEN ROUTER SCREEN LAUNCH
+const API_BASE_URL = "http://127.0.0.1:8000/";
 window.onload = function() {
     renderAppLayoutState();
 };
@@ -23,7 +22,7 @@ function toggleProfileView(showProfile){
 function populateProfileData(){
     if (!currentUserId) return;
     document.getElementById("profileIdField").innerText=`#${currentUserId}`;
-    fetch(`http://127.0.0.1:8000/user/profile?user_id=${currentUserId}`)
+    fetch(`${API_BASE_URL}user/profile?user_id=${currentUserId}`)
     .then(response => response.json())
     .then(data => {
         const emailField = document.getElementById("profileEmailField");
@@ -37,11 +36,22 @@ function populateProfileData(){
     .catch(error => console.error("Telemetry map fetch fault:", error));
 }
 
+function togglePasswordVisibility() {
+    const passwordField = document.getElementById("authPassword");
+    const checkbox = document.getElementById("showPasswordCheckbox");
+    
+    if (checkbox.checked) {
+        passwordField.type = "text";
+    } else {
+        passwordField.type = "password";
+    }
+}
+
 function updateProfileNameAction() {
     const freshNameValue = document.getElementById("profileNameInput").value;
     if (freshNameValue.trim() === "") return;
 
-    fetch("http://127.0.0.1:8000/user/profile/update", {
+    fetch(`${API_BASE_URL}user/profile/update`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ user_id: parseInt(currentUserId), new_name: freshNameValue })
@@ -71,15 +81,13 @@ function renderAppLayoutState() {
     }
 }
 
-// 2. LOGOUT REMOVAL VALVE
 function handleLogout() {
     localStorage.removeItem("activeSaaSUser");
     currentUserId = null;
     renderAppLayoutState();
-    toggleProfileView(false); // Dynamically kicks user back to the entrance wall instantly
+    toggleProfileView(false); 
 }
 
-// 3. SWITCH MODE ENGAGE
 function toggleAuthMode() {
     isLoginMode = !isLoginMode;
     const title = document.getElementById("authTitle");
@@ -101,9 +109,11 @@ function toggleAuthMode() {
         toggleBtn.innerText = "Back to Login";
         nameWrapper.style.display="block";
     }
+    document.getElementById("showPasswordCheckbox").checked = false;
+    document.getElementById("authPassword").type = "password";
 }
 
-// 4. HANDSHAKE ENGINE
+
 function handleAuthAction() {
     const email = document.getElementById("authEmail").value;
     const password = document.getElementById("authPassword").value;
@@ -118,7 +128,7 @@ function handleAuthAction() {
         payload.name = name || "Anonymous Developer";
     }
 
-    fetch(`http://127.0.0.1:8000/${endpoint}`, {
+    fetch(`${API_BASE_URL}${endpoint}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload)
@@ -143,7 +153,7 @@ function handleAuthAction() {
 function loadJournalHistoryStream() {
     if (!currentUserId) return;
 
-    fetch(`http://127.0.0.1:8000/journal?user_id=${currentUserId}`)
+    fetch(`${API_BASE_URL}journal?user_id=${currentUserId}`)
     .then(response => response.json())
     .then(entriesList => {
         const historyContainer = document.getElementById("journalHistoryStream");
@@ -156,7 +166,6 @@ function loadJournalHistoryStream() {
             return;
         }
 
-        // Loop backwards through entries so the newest log always sits on top of the list feed
         entriesList.reverse().forEach(entry => {
             const entryBlock = document.createElement("div");
             entryBlock.style.background = "#27272a";
@@ -174,14 +183,13 @@ function loadJournalHistoryStream() {
     .catch(error => console.error("History aggregator fetch crash caught:", error));
 }
 
-// 6. AI JOURNAL LOG TRANSMISSION SUBMIT pipeline
 function logJournalAction() {
     const inputElement = document.getElementById("journalInput");
     const userText = inputElement.value;
 
     if (userText.trim() === "") return;
 
-    fetch("http://127.0.0.1:8000/journal", {
+    fetch(`${API_BASE_URL}journal`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ content: userText, user_id: currentUserId })
@@ -189,19 +197,18 @@ function logJournalAction() {
     .then(response => response.json())
     .then(data => {
         if (data.status === "success") {
-            inputElement.value = ""; // Erase box text input instantly
-            logMetricsAction();      // SILENT REFRESH: updates math card values natively
-            loadJournalHistoryStream(); // SILENT REFRESH: appends the new text item to the stream feed list!
+            inputElement.value = ""; 
+            logMetricsAction();      
+            loadJournalHistoryStream(); 
         }
     })
     .catch(error => console.error("Submission stream network drop caught:", error));
 }
 
-// 7. ANALYTICS PIPELINE CALCULATOR
 function logMetricsAction() {
     if (!currentUserId || currentUserId === "null") return;
 
-    fetch(`http://127.0.0.1:8000/journal/analytics?user_id=${currentUserId}`)
+    fetch(`${API_BASE_URL}journal/analytics?user_id=${currentUserId}`)
     .then(response => response.json())
     .then(data => {
         const totalDisplayElement = document.getElementById("analyticsTotal");
@@ -219,9 +226,8 @@ function logMetricsAction() {
     .catch(error => console.error("Silent calculation error handled:", error));
 }
 
-// 8. HABIT PIPELINE ACTION 
 function logHabitAction() {
-    fetch("http://127.0.0.1:8000/habits/log", {
+    fetch(`${API_BASE_URL}habits/log`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name: "Coding Sprint", user_id: currentUserId })

@@ -1,4 +1,5 @@
 import os
+import uvicorn
 from fastapi import FastAPI, Depends
 from fastapi.middleware.cors import CORSMiddleware 
 from pydantic import BaseModel,EmailStr
@@ -9,6 +10,8 @@ from google import genai
 import models
 from database import engine,Sessionlocal
 
+import warnings
+warnings.filterwarnings("ignore", category=UserWarning)
 
 load_dotenv()
 api_key=os.getenv("GOOGLE_API_KEY")
@@ -52,12 +55,10 @@ def read_root():
 @app.post("/journal")
 def create_journal_entry(entry: JournalEntrySchema, db: Session = Depends(get_db)):
     
-    # 1. Guard Clause: Check if this user ID even exists in our system before saving!
     user_exists = db.query(models.UserTable).filter(models.UserTable.id == entry.user_id).first()
     if not user_exists:
         return {"status": "error", "message": "Access Denied: Invalid user account account"}
 
-    # 2. Set up our safe fallback default mood
     extracted_mood = "Unknown"
     
     ai_prompt = f"""
@@ -68,7 +69,6 @@ def create_journal_entry(entry: JournalEntrySchema, db: Session = Depends(get_db
     Journal Entry: "{entry.content}"
     """
     
-    # 3. Request analysis from our cloud AI engine
     try:
         response = ai_client.models.generate_content(
             model='gemini-2.5-flash',
@@ -77,13 +77,12 @@ def create_journal_entry(entry: JournalEntrySchema, db: Session = Depends(get_db
         extracted_mood = response.text.strip()
     except Exception as e:
         print(f"AI Network jam caught safely: {e}")
-        extracted_mood = "Calm" # Our safe backup state
+        extracted_mood = "Calm" 
         
-    # 4. Save EVERYTHING into our physical database row, including the owner's link!
     new_row = models.JournalTable(
         content=entry.content,
         mood=extracted_mood,
-        user_id=entry.user_id # <-- Binds this entry securely to our specific user account!
+        user_id=entry.user_id
     )
     
     db.add(new_row)
@@ -94,7 +93,7 @@ def create_journal_entry(entry: JournalEntrySchema, db: Session = Depends(get_db
         "status": "success", 
         "saved_id": new_row.id, 
         "ai_predicted_mood": new_row.mood,
-        "owner_email": user_exists.email # Pro proof: pulling the owner's email via our query link!
+        "owner_email": user_exists.email 
     }
 
 @app.get("/journal")
@@ -118,7 +117,7 @@ def register_user(user_data:UserCreateSchema, db:Session=Depends(get_db)):
     db.commit()
     db.refresh(new_user_row)
     return {
-        "status": "Account created successfully",
+        "status": "success",
         "message":"User profile initialized perfectly inside the disturbed cluster",
         "user_id": new_user_row.id
         
@@ -135,7 +134,7 @@ def login_user(user_data: UserCreateSchema, db: Session = Depends(get_db)):
     
     if incoming_fake_hash == db_user.hashed_password:
         return {
-            "status": "success", # <-- CHANGED to standard "success" flag!
+            "status": "success", 
             "message": f"Welcome back, {db_user.email}!",
             "user_id": db_user.id
         }
@@ -243,3 +242,7 @@ def update_user_profile_name(update_data: ProfileUpdateSchema, db: Session = Dep
         "message": "Global telemetry profile identity string modified.",
         "updated_name": user.name
     }
+
+if __name__=="__main__":
+    port=int(os.environ.get("PORT",8000))
+    uvicorn.run("main:app", host="0.0.0.0", port=port)
