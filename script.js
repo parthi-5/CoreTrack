@@ -1,6 +1,6 @@
 let currentUserId = localStorage.getItem("activeSaaSUser") || null;
 let isLoginMode = true;
-const API_BASE_URL = "http://127.0.0.1:8000/";
+const API_BASE_URL = "https://coretrack-backend-ftor.onrender.com/";
 window.onload = function() {
     renderAppLayoutState();
 };
